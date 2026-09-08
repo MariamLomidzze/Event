@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}My Profile - EventHub{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <img src="{{ image_file }}"
+                 class="profile-avatar" alt="Profile picture"
+                 onerror="this.src='https://via.placeholder.com/96?text=%F0%9F%91%A4'">
+            <div>
+                <h3 class="mb-0">{{ current_user.name }}</h3>
+                <p class="text-muted mb-0">{{ current_user.email }}</p>
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                {% for error in form.name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                {% for error in form.email.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.picture.label(class="form-label") }}
+                {{ form.picture(class="form-control") }}
+            </div>
+            {{ form.submit(class="btn btn-accent") }}
+        </form>
+
+        <hr class="my-4">
+        <h5>My Events</h5>
+        <ul class="list-group">
+            {% for event in current_user.events %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{ url_for('event_detail', event_id=event.id) }}">{{ event.title }}</a>
+                <span class="text-muted small">{{ event.event_date.strftime('%b %d, %Y') }}</span>
+            </li>
+            {% else %}
+            <li class="list-group-item text-muted">You haven't posted any events yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

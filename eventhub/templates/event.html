@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }} - EventHub{% endblock %}
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-8">
+        <span class="category-pill mb-2 d-inline-block">{{ event.category }}</span>
+        <h1>{{ event.title }}</h1>
+        <p class="text-muted">
+            Posted by <strong>{{ event.author.name }}</strong>
+            &middot; {{ event.event_date.strftime('%B %d, %Y') }}
+            &middot; {{ event.location }}
+        </p>
+
+        <img src="{{ url_for('static', filename='event_pics/' + event.image) }}"
+             class="img-fluid rounded mb-4" alt="{{ event.title }}"
+             onerror="this.src='https://via.placeholder.com/800x400?text=Event'">
+
+        <p class="lead">{{ event.short_description }}</p>
+        <p style="white-space: pre-line;">{{ event.full_description }}</p>
+
+        {% if current_user.is_authenticated and current_user.id == event.user_id %}
+        <div class="mt-4 d-flex gap-2">
+            <a href="{{ url_for('update_event', event_id=event.id) }}" class="btn btn-outline-dark">Edit</a>
+            <form method="POST" action="{{ url_for('delete_event', event_id=event.id) }}"
+                  onsubmit="return confirm('Delete this event? This cannot be undone.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-outline-danger">Delete</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card p-3 mb-3">
+            <h6 class="text-muted mb-2">Details</h6>
+            <p class="mb-1"><strong>Organizer:</strong> {{ event.organizer }}</p>
+            <p class="mb-1"><strong>Location:</strong> {{ event.location }}</p>
+            <p class="mb-1"><strong>Ticket Price:</strong>
+                {% if event.ticket_price and event.ticket_price > 0 %}${{ '%.2f'|format(event.ticket_price) }}{% else %}Free{% endif %}
+            </p>
+        </div>
+
+        {% if weather %}
+        <div class="weather-chip">
+            🌤️ {{ weather.description }}, {{ weather.temp }}°C in {{ event.location }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

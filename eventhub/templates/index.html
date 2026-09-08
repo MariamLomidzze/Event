@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Events - EventHub{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <h2 class="mb-0">Upcoming & Recent Events</h2>
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('add_event') }}" class="btn btn-accent">+ Add Event</a>
+    {% endif %}
+</div>
+
+<form method="GET" class="row g-2 mb-4">
+    <div class="col-auto">
+        <select name="category" class="form-select" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            {% for cat in categories %}
+                <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="sort" class="form-select" onchange="this.form.submit()">
+            <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>Newest Posted</option>
+            <option value="oldest" {% if selected_sort == 'oldest' %}selected{% endif %}>Oldest Posted</option>
+            <option value="date" {% if selected_sort == 'date' %}selected{% endif %}>Event Date</option>
+        </select>
+    </div>
+</form>
+
+{% if events %}
+<div class="row g-4">
+    {% for event in events %}
+    <div class="col-sm-6 col-lg-4">
+        <div class="card event-card">
+            <img src="{{ url_for('static', filename='event_pics/' + event.image) }}"
+                 class="card-img-top" alt="{{ event.title }}"
+                 onerror="this.src='https://via.placeholder.com/400x200?text=Event'">
+            <div class="card-body d-flex flex-column">
+                <span class="category-pill mb-2 align-self-start">{{ event.category }}</span>
+                <h5 class="card-title">{{ event.title }}</h5>
+                <p class="card-text text-muted small mb-1">
+                    By <a href="{{ url_for('event_detail', event_id=event.id) }}">{{ event.author.name }}</a>
+                    &middot; {{ event.event_date.strftime('%b %d, %Y') }}
+                </p>
+                <p class="card-text flex-grow-1">{{ event.short_description }}</p>
+                <a href="{{ url_for('event_detail', event_id=event.id) }}" class="btn btn-outline-dark btn-sm mt-2">Read More</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('index', page=pagination.prev_num, category=selected_category, sort=selected_sort) }}">Previous</a>
+        </li>
+        {% for p in pagination.iter_pages() %}
+            {% if p %}
+                <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('index', page=p, category=selected_category, sort=selected_sort) }}">{{ p }}</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">…</span></li>
+            {% endif %}
+        {% endfor %}
+        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('index', page=pagination.next_num, category=selected_category, sort=selected_sort) }}">Next</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<p class="text-muted">No events found.</p>
+{% endif %}
+
+{% endblock %}

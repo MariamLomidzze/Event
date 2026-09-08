@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - EventHub{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <h2 class="mb-4">{{ title }}</h2>
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+                {{ form.title.label(class="form-label") }}
+                {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else "")) }}
+                {% for error in form.title.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.short_description.label(class="form-label") }}
+                {{ form.short_description(class="form-control" + (" is-invalid" if form.short_description.errors else "")) }}
+                {% for error in form.short_description.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.full_description.label(class="form-label") }}
+                {{ form.full_description(class="form-control" + (" is-invalid" if form.full_description.errors else ""), rows=6) }}
+                {% for error in form.full_description.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.location.label(class="form-label") }}
+                    {{ form.location(class="form-control" + (" is-invalid" if form.location.errors else "")) }}
+                    {% for error in form.location.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.event_date.label(class="form-label") }}
+                    {{ form.event_date(class="form-control" + (" is-invalid" if form.event_date.errors else ""), type="date") }}
+                    {% for error in form.event_date.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.ticket_price.label(class="form-label") }}
+                    {{ form.ticket_price(class="form-control" + (" is-invalid" if form.ticket_price.errors else "")) }}
+                    {% for error in form.ticket_price.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.category.label(class="form-label") }}
+                    {{ form.category(class="form-select") }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form.organizer.label(class="form-label") }}
+                {{ form.organizer(class="form-control" + (" is-invalid" if form.organizer.errors else "")) }}
+                {% for error in form.organizer.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="mb-3">
+                {{ form.image.label(class="form-label") }}
+                {{ form.image(class="form-control" + (" is-invalid" if form.image.errors else "")) }}
+                {% for error in form.image.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                {% if event and event.image != 'default_event.jpg' %}
+                    <small class="text-muted">Leave empty to keep the current image.</small>
+                {% endif %}
+            </div>
+
+            {{ form.submit(class="btn btn-accent") }}
+        </form>
+    </div>
+</div>
+
+{% endblock %}
